@@ -10,9 +10,7 @@ void main() {
 	// while (1)
 	// 	uart_update();
 
-	uint32_t gpfsel4 = mmio_read(GPFSEL4);
-	gpfsel4 |= 0x40;
-	mmio_write(GPFSEL4, gpfsel4);
+	mmio_write(GPFSEL4, mmio_read(GPFSEL4) | 0x40);
 
 	while (1) {
 		mmio_write(GPSET1, 1 << 10);

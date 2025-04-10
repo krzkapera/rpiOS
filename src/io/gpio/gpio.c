@@ -30,7 +30,7 @@ uint32_t gpio_clear(uint32_t pin_number, uint32_t value) {
 }
 
 uint32_t gpio_pull(uint32_t pin_number, uint32_t value) {
-	return gpio_call(pin_number, value, GPPUPPDN0, 2);
+	return gpio_call(pin_number, value, GPIO_PUP_PDN_CNTRL_REG0, 2);
 }
 
 uint32_t gpio_function(uint32_t pin_number, uint32_t value) {

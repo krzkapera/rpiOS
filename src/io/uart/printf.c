@@ -20,7 +20,7 @@
 #include <stdbool.h>
 
 void __write_char__(char c) {
-	uart_writeByte(c);
+	uart_write_byte(c);
 }
 
 /*

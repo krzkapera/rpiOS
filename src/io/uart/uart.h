@@ -4,7 +4,7 @@
 #include "../gpio/gpio.h"
 
 enum {
-	AUX_BASE = PERIPHERAL_BASE + 0x215000,
+	AUX_BASE = GPIO_BASE + 0x15000,
 	AUX_IRQ = AUX_BASE,
 	AUX_ENABLES = AUX_BASE + 4,
 	AUX_MU_IO_REG = AUX_BASE + 64,
@@ -22,11 +22,11 @@ enum {
 	UART_MAX_QUEUE = 16 * 1024
 };
 
+#define AUX_MU_BAUD(baud) ((AUX_UART_CLOCK / (baud * 8)) - 1)
+
 void uart_init();
-void uart_writeText(char* buffer);
-void uart_writeByte(unsigned char ch);
-unsigned char uart_readByte();
-unsigned int uart_isReadByteReady();
+void uart_write_text(char* buffer);
+void uart_write_byte(uint8_t ch);
 void uart_update();
 
 #endif // __UART_H__

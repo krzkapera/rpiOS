@@ -1,8 +1,6 @@
 #include "uart.h"
 #include "../gpio/gpio.h"
 
-#define AUX_MU_BAUD(baud) ((AUX_UART_CLOCK / (baud * 8)) - 1)
-
 void uart_init() {
 	mmio_write(AUX_ENABLES, 1); // enable UART1
 	mmio_write(AUX_MU_IER_REG, 0);
@@ -17,35 +15,35 @@ void uart_init() {
 	mmio_write(AUX_MU_CNTL_REG, 3); // enable RX/TX
 }
 
-unsigned int uart_isReadByteReady() {
+uint32_t uart_is_read_byte_ready() {
 	return mmio_read(AUX_MU_LSR_REG) & 0x01;
 }
 
-unsigned int uart_isWriteByteReady() {
+uint32_t uart_is_write_byte_ready() {
 	return mmio_read(AUX_MU_LSR_REG) & 0x20;
 }
 
-unsigned char uart_readByte() {
-	while (!uart_isReadByteReady())
+uint8_t uart_read_byte() {
+	while (!uart_is_read_byte_ready())
 		;
-	return (unsigned char)mmio_read(AUX_MU_IO_REG);
+	return (uint8_t)mmio_read(AUX_MU_IO_REG);
 }
 
-void uart_writeByte(unsigned char ch) {
-	while (!uart_isWriteByteReady())
+void uart_write_byte(uint8_t ch) {
+	while (!uart_is_write_byte_ready())
 		;
-	mmio_write(AUX_MU_IO_REG, (unsigned int)ch);
+	mmio_write(AUX_MU_IO_REG, (uint32_t)ch);
 }
 
-void uart_writeText(char* buffer) {
+void uart_write_text(char* buffer) {
 	while (*buffer) {
-		uart_writeByte(*buffer++);
+		uart_write_byte(*buffer++);
 	}
 }
 
 void uart_update() {
-	if (uart_isReadByteReady()) {
-		unsigned char ch = uart_readByte();
-		uart_writeByte(ch);
+	if (uart_is_read_byte_ready()) {
+		uint8_t ch = uart_read_byte();
+		uart_write_byte(ch);
 	}
 }
