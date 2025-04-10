@@ -1,0 +1,10 @@
+{
+    "makefile.configureOnOpen": true,
+    "files.associations": {
+        "bcm2711.h": "c",
+        "unistd.h": "c",
+        "types.h": "c",
+        "stdint.h": "c",
+        "cstdint": "c"
+    }
+}
