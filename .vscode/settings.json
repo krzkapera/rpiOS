@@ -5,6 +5,12 @@
         "unistd.h": "c",
         "types.h": "c",
         "stdint.h": "c",
-        "cstdint": "c"
-    }
+        "cstdint": "c",
+        "printf.h": "c",
+        "gpio.h": "c",
+        "uart.h": "c",
+        "mmio.h": "c"
+    },
+    "files.insertFinalNewline": true,
+    "files.trimFinalNewlines": true
 }

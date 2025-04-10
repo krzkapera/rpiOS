@@ -32,6 +32,7 @@
 #else
 #define LAST_NIBBLE_FIRST_BIT 28
 #endif
+#include "../uart/uart.h"
 /**
  * @brief prints an unformatted string to the UART
  *

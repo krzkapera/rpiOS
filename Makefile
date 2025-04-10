@@ -1,25 +1,32 @@
-CFILES = $(wildcard *.c)
-OFILES = $(CFILES:.c=.o)
+SRC_DIR = src
+BUILD_DIR = build
+
+CFILES = $(shell find $(SRC_DIR) -type f -name "*.c")
+OFILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(CFILES))
 #  -nostdinc
 GCCFLAGS = -Wall -O0 -ffreestanding -nostdlib -nostartfiles
 GCCPATH = /opt/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin
 
-all: clean kernel8.img
+all: clean $(BUILD_DIR)/output/kernel8.img
 
-boot.o: boot.S
-	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c boot.S -o boot.o
-
-%.o: %.c
+$(BUILD_DIR)/boot.o: $(SRC_DIR)/boot.S | $(BUILD_DIR)
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
 
-kernel8.img: boot.o $(OFILES)
-	$(GCCPATH)/aarch64-none-elf-ld -nostdlib boot.o $(OFILES) -T link.ld -o kernel8.elf
-	$(GCCPATH)/aarch64-none-elf-objcopy -O binary kernel8.elf kernel8.img
-	sudo mount -t drvfs J: /mnt/j
-	cp kernel8.img /mnt/j/kernel8.img
-	sudo umount /mnt/j
-	powershell.exe -Command "(New-Object -comObject Shell.Application).Namespace(17).ParseName('J:').InvokeVerb('Eject'); Start-Sleep -Seconds 2"
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
+	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
 
+$(BUILD_DIR)/output/kernel8.img: $(BUILD_DIR)/boot.o $(OFILES)
+	$(GCCPATH)/aarch64-none-elf-ld -nostdlib $^ -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
+	$(GCCPATH)/aarch64-none-elf-objcopy -O binary $(BUILD_DIR)/kernel8.elf $(BUILD_DIR)/output/kernel8.img
+	cp $(BUILD_DIR)/output/kernel8.img /mnt/j/kernel8.img
+	sudo umount /mnt/j
+	powershell.exe -Command "(New-Object -comObject Shell.Application).Namespace(17).ParseName('Q:').InvokeVerb('Eject'); Start-Sleep -Seconds 1"
+
+$(BUILD_DIR):
+	@$(shell mkdir -p $(dir $(OFILES)))
+	@sudo mount -t drvfs Q: /mnt/j 2> /dev/null || (echo "Nie ma karty" && exit 1)
+	@mkdir -p $(BUILD_DIR)
+	@mkdir -p $(BUILD_DIR)/output
 
 clean:
-	/bin/rm kernel8.elf *.o *.img > /dev/null 2> /dev/null || true
+	@/bin/rm -rf $(BUILD_DIR) > /dev/null 2> /dev/null || true

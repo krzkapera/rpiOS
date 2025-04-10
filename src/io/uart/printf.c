@@ -15,13 +15,12 @@
  **/
 
 #include "printf.h"
-#include "io.h"
 
 #include <stdarg.h>
 #include <stdbool.h>
 
 void __write_char__(char c) {
-	uart_writeByteBlockingActual(c);
+	uart_writeByte(c);
 }
 
 /*
