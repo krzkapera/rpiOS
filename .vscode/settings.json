@@ -1,16 +1,9 @@
 {
     "makefile.configureOnOpen": true,
-    "files.associations": {
-        "bcm2711.h": "c",
-        "unistd.h": "c",
-        "types.h": "c",
-        "stdint.h": "c",
-        "cstdint": "c",
-        "printf.h": "c",
-        "gpio.h": "c",
-        "uart.h": "c",
-        "mmio.h": "c"
-    },
     "files.insertFinalNewline": true,
-    "files.trimFinalNewlines": true
+    "files.trimFinalNewlines": true,
+    "files.associations": {
+        "*.h": "c",
+        "*.c": "c"
+    }
 }
