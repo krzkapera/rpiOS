@@ -21,7 +21,7 @@ $(BUILD_DIR)/output/kernel8.img: $(BUILD_DIR)/boot.o $(OFILES)
 	cp $(BUILD_DIR)/output/kernel8.img /mnt/j/kernel8.img
 	sudo umount /mnt/j
 	powershell.exe -Command "(New-Object -comObject Shell.Application).Namespace(17).ParseName('Q:').InvokeVerb('Eject'); Start-Sleep -Seconds 1"
-	date +"%b %d %Y %H:%M:%S"
+	@date +"%b %d %Y %H:%M:%S"
 
 $(BUILD_DIR):
 	@$(shell mkdir -p $(dir $(OFILES)))
