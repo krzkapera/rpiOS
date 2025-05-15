@@ -1,7 +1,7 @@
 #ifndef __POWER_H__
 #define __POWER_H__
 
-#include "../mmio/mmio.h"
+#include "../io/mmio/mmio.h"
 
 enum {
 	PM_RSTC = PERIPHERAL_BASE + 0x0010001c,
