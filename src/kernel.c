@@ -8,21 +8,13 @@
 
 extern uint32_t get_el();
 
-int test(const char* fmt, ...) {
-	int state = 5;
-	va_list args;
-
-	va_start(args, fmt);
-	va_end(args);
-	return 0;
-}
-
 void main() {
-	uart_write_text("\r\nCompilation time: " __DATE__ " " __TIME__ "\r\n");
-	uart_write_byte(get_el() + '0');
-	uart_write_text("\r\nHMM\r\n");
-	test(0);
-	uart_write_text("XD\r\n");
+	uart_init();
+	printf("Compilation time: " __DATE__ " " __TIME__ " EL: %d\r\n", get_el() + '0');
+
+	// irq_init_vectors();
+	// enable_core0_interrupt_controller_AUX();
+	// irq_enable();
 
 	gpio_function(42, GPIO_FUNCTION_OUTPUT);
 

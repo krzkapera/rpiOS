@@ -21,17 +21,6 @@ albo ze nowy kod, odbiera, zapisuje i restartuje
     ; eret
 
 
-	// irq_init_vectors();
-	// enable_core0_interrupt_controller_AUX();
-	// irq_enable();
-
-	// printf("\r\n%d\r\n", get_el());
-	// while (1) {
-	// }
-	// uart_init();
-	// printf("Compilation time: " __DATE__ " " __TIME__ "\r\n");
-
-
     MMU i cache dla EL1:
 
     mrs     x0, sctlr_el1
@@ -40,3 +29,6 @@ albo ze nowy kod, odbiera, zapisuje i restartuje
     bic     x0, x0, #(1 << 12)  // I-cache disable
     msr     sctlr_el1, x0
     isb
+
+
+kernel_old=1 -> EL3, =0 -> EL2
