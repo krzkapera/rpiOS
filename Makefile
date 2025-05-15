@@ -12,6 +12,12 @@ all: clean $(BUILD_DIR)/output/kernel8.img
 $(BUILD_DIR)/boot.o: $(SRC_DIR)/boot.S | $(BUILD_DIR)
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
 
+# $(BUILD_DIR)/entry.o: $(SRC_DIR)/irq/entry.S | $(BUILD_DIR)
+# 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
+
+# $(BUILD_DIR)/irq_S.o: $(SRC_DIR)/irq/irq.S | $(BUILD_DIR)
+# 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
+
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
 

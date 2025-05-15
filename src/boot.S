@@ -28,3 +28,9 @@ _start:
 4:  bl      main
     // In case it does return, halt the master core too
     b       1b
+
+.globl get_el
+get_el:
+    mrs x0, CurrentEL
+    lsr x0, x0, #2
+    ret
