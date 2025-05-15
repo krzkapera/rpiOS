@@ -7,9 +7,6 @@ void irq_init_vectors();
 void irq_enable();
 void irq_disable();
 
-// uint64_t get_vbar();
-// uint32_t get_el();
-
 void enable_core0_interrupt_controller_AUX();
 
 enum {

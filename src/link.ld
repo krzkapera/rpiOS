@@ -13,6 +13,9 @@ SECTIONS
         __bss_end = .;
     }
     _end = .;
+    . = ALIGN(16);
+    . = . + 0x10000;
+    __stack_top = .;
 
    /DISCARD/ : { *(.comment) *(.gnu*) *(.note*) *(.eh_frame*) }
 }

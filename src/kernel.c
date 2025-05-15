@@ -3,18 +3,26 @@
 #include "io/uart/printf.h"
 // #include "irq/irq.h"
 #include "power/power.h"
+#include <stdarg.h>
 #include <stdint.h>
 
 extern uint32_t get_el();
 
-int counter = 66;
+int test(const char* fmt, ...) {
+	int state = 5;
+	va_list args;
+
+	va_start(args, fmt);
+	va_end(args);
+	return 0;
+}
 
 void main() {
-	uart_init();
-	printf("Compilation time: " __DATE__ " " __TIME__ "\r\n");
+	uart_write_text("\r\nCompilation time: " __DATE__ " " __TIME__ "\r\n");
 	uart_write_byte(get_el() + '0');
-
-	printf("\r\n%d\r\n", get_el());
+	uart_write_text("\r\nHMM\r\n");
+	test(0);
+	uart_write_text("XD\r\n");
 
 	gpio_function(42, GPIO_FUNCTION_OUTPUT);
 
@@ -27,10 +35,4 @@ void main() {
 
 	while (1) {
 	}
-
-	restart();
 }
-
-// irq_init_vectors();
-// enable_core0_interrupt_controller_AUX();
-// irq_enable();
