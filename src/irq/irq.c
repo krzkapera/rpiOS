@@ -1,4 +1,5 @@
 #include "irq.h"
+#include "../io/uart/printf.h"
 #include "../io/uart/uart.h"
 
 const char entry_error_messages[16][32] = {
@@ -17,8 +18,6 @@ void enable_core0_interrupt_controller_AUX() {
 	mmio_write(IRQ0_SET_EN_0, IRQ_ON);
 }
 
-// extern int counter;
-
 void handle_irq() {
 	uint32_t irq = mmio_read(IRQ0_PENDING0);
 
@@ -26,11 +25,7 @@ void handle_irq() {
 		if (irq & IRQ_ON) {
 			irq &= ~IRQ_ON;
 			while ((mmio_read(AUX_MU_IIR_REG) & 4) == 4) {
-				// counter = 77;
-
-				uart_write_text("Mini-UART Recv:\r\n");
-				// uart_write_byte(uart_read_byte());
-				// uart_write_text("\n");
+				printf("Mini-UART Recv: %c\r\n", uart_read_byte());
 			}
 		}
 	}

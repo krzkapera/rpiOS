@@ -5,6 +5,10 @@
 #define SPSR_VALUE			(SPSR_MASK_ALL | SPSR_EL1h)
 #define MAIN_STACK      0x400000
 
+#define SCR_RW				(1 << 10)
+#define SCR_NS				(1 << 0)
+#define SCR_VALUE	    	(SCR_RW | SCR_NS)
+
 .global _start  // Execution starts here
 
 _start:
@@ -30,14 +34,35 @@ _start:
 
 4:  nop
 
-    // enable floating point registers, used in printf
-    MRS     x0, CPTR_EL3
+    // enable floating point registers in, used in printf
+    MRS     x0, cptr_el3
     BIC     x0, x0, #(1 << 31)
     BIC     x0, x0, #(1 << 10)
-    MSR     CPTR_EL3, x0
+    MSR     cptr_el3, x0
+
+    
+    mov     x0, #3 << 20
+    msr     cpacr_el1, x0	 // Enable FP/SIMD at EL1
     //
     
+    mov x0, #MAIN_STACK
+    msr sp_el1, x0
 
+    mrs x0, hcr_el2
+    orr x0, x0, #(1 << 31)
+    msr hcr_el2, x0
+
+    mov x0, #(0b0101)
+    msr spsr_el3, x0
+
+    ldr     x0, =SCR_VALUE
+    msr     scr_el3, x0
+
+    adr x0, el1_entry
+    msr elr_el3, x0
+    eret
+    
+el1_entry:
     bl main
     b       .
 
