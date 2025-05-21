@@ -25,11 +25,11 @@ enum {
 #define AUX_MU_BAUD(baud) ((AUX_UART_CLOCK / (baud * 8)) - 1)
 
 void uart_init();
-void uart_write_text(const char*);
-void uart_write_byte(uint8_t);
-uint8_t uart_read_byte();
+void puts(const char*);
+void putchar(uint8_t);
+uint8_t getchar();
 void uart_update();
 void uart_dump(void*);
-void uart_hex(unsigned int d);
+void puthex(unsigned int d);
 
 #endif // __UART_H__

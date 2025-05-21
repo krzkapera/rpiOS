@@ -54,8 +54,7 @@ DRESULT disk_read(BYTE pdrv,	/* Physical drive nmuber to identify the drive */
 		return RES_PARERR;
 	}
 
-	int res = sd_readblock(sector, buff, count);
-	if (count == res) {
+	if (sd_readblock(sector, buff, count) == count) {
 		return RES_OK;
 	}
 
@@ -77,8 +76,8 @@ DRESULT disk_write(BYTE pdrv,		 /* Physical drive nmuber to identify the drive *
 		return RES_PARERR;
 	}
 
-	if (sd_writeblock(buff, sector, count) == 0) {
-		return RES_OK; /* Write successful */
+	if (sd_writeblock(buff, sector, count) == count) {
+		return RES_OK;
 	}
 
 	return RES_ERROR;
@@ -100,7 +99,7 @@ DRESULT disk_ioctl(BYTE pdrv, /* Physical drive nmuber (0..) */
 
 	switch (cmd) {
 	case GET_SECTOR_COUNT:
-		*(LBA_t*)buff = 8388608; // Karta 4GB, 512B na sektor
+		*(LBA_t*)buff = 1048576; // Karta 512MB, 512B na sektor
 		return RES_OK;
 
 	case GET_SECTOR_SIZE:
@@ -113,4 +112,8 @@ DRESULT disk_ioctl(BYTE pdrv, /* Physical drive nmuber (0..) */
 	}
 
 	return RES_PARERR;
+}
+
+DWORD get_fattime() {
+	return (2025 - 1980) << 25 | 5 << 21 | 21 << 16 | 12 << 11 | 12 << 5 | 12 >> 1;
 }

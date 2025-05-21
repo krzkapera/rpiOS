@@ -43,3 +43,11 @@ char* strchr(const char* s, int c) {
 
 	return c == '\0' ? (char*)s : NULL; // Jeśli szukamy '\0', zwróć wskaźnik do końca
 }
+
+size_t strlen(const char* str) {
+	size_t length = 0;
+	while (str[length] != '\0') {
+		length++;
+	}
+	return length;
+}

@@ -25,32 +25,35 @@ uint32_t uart_is_write_byte_ready() {
 	return mmio_read(AUX_MU_LSR_REG) & 0x20;
 }
 
-uint8_t uart_read_byte() {
+uint8_t getchar() {
 	while (!uart_is_read_byte_ready())
 		;
 	return (uint8_t)mmio_read(AUX_MU_IO_REG);
 }
 
-void uart_write_byte(uint8_t ch) {
+void putchar(uint8_t ch) {
+	if (ch == '\n') {
+		putchar('\r');
+	}
 	while (!uart_is_write_byte_ready())
 		;
 	mmio_write(AUX_MU_IO_REG, (uint32_t)ch);
 }
 
-void uart_write_text(const char* buffer) {
+void puts(const char* buffer) {
 	while (*buffer) {
-		uart_write_byte(*buffer++);
+		putchar(*buffer++);
 	}
 }
 
 void uart_update() {
 	if (uart_is_read_byte_ready()) {
-		uint8_t ch = uart_read_byte();
-		uart_write_byte(ch);
+		uint8_t ch = getchar();
+		putchar(ch);
 	}
 }
 
-void uart_hex(unsigned int d) {
+void puthex(unsigned int d) {
 	unsigned int n;
 	int c;
 	for (c = 28; c >= 0; c -= 4) {
@@ -58,7 +61,7 @@ void uart_hex(unsigned int d) {
 		n = (d >> c) & 0xF;
 		// 0-9 => '0'-'9', 10-15 => 'A'-'F'
 		n += n > 9 ? 0x37 : 0x30;
-		uart_write_byte(n);
+		putchar(n);
 	}
 }
 
@@ -66,28 +69,28 @@ void uart_dump(void* ptr) {
 	unsigned long a, b, d;
 	unsigned char c;
 	for (a = (unsigned long)ptr; a < (unsigned long)ptr + 512; a += 16) {
-		uart_hex(a);
-		uart_write_text(": ");
+		puthex(a);
+		puts(": ");
 		for (b = 0; b < 16; b++) {
 			c = *((unsigned char*)(a + b));
 			d = (unsigned int)c;
 			d >>= 4;
 			d &= 0xF;
 			d += d > 9 ? 0x37 : 0x30;
-			uart_write_byte(d);
+			putchar(d);
 			d = (unsigned int)c;
 			d &= 0xF;
 			d += d > 9 ? 0x37 : 0x30;
-			uart_write_byte(d);
-			uart_write_byte(' ');
+			putchar(d);
+			putchar(' ');
 			if (b % 4 == 3) {
-				uart_write_byte(' ');
+				putchar(' ');
 			}
 		}
 		for (b = 0; b < 16; b++) {
 			c = *((unsigned char*)(a + b));
-			uart_write_byte(c < 32 || c >= 127 ? '.' : c);
+			putchar(c < 32 || c >= 127 ? '.' : c);
 		}
-		uart_write_text("\r\n");
+		puts("\n");
 	}
 }

@@ -35,6 +35,6 @@
 
 int sd_init();
 int sd_readblock(unsigned int lba, unsigned char* buffer, unsigned int num);
-int sd_writeblock(unsigned char* buffer, unsigned int lba, unsigned int num);
+int sd_writeblock(const unsigned char* buffer, unsigned int lba, unsigned int num);
 
 #endif // __SD_H__

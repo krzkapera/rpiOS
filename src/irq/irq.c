@@ -9,9 +9,9 @@ const char entry_error_messages[16][32] = {
 	"SYNC_INVALID_EL0_32", "IRQ_INVALID_EL0_32", "FIQ_INVALID_EL0_32", "SERROR_INVALID_EL0_32"};
 
 void show_invalid_entry_message(uint32_t type, uint64_t esr, uint64_t address) {
-	uart_write_text("ERROR CAUGHT: ");
-	uart_write_text(entry_error_messages[type]);
-	uart_write_text(", ERS: TODO, Address: TODO \n");
+	puts("ERROR CAUGHT: ");
+	puts(entry_error_messages[type]);
+	puts(", ERS: TODO, Address: TODO \n");
 }
 
 void enable_core0_interrupt_controller_AUX() {
@@ -25,7 +25,7 @@ void handle_irq() {
 		if (irq & IRQ_ON) {
 			irq &= ~IRQ_ON;
 			while ((mmio_read(AUX_MU_IIR_REG) & 4) == 4) {
-				printf("Mini-UART Recv: %c\r\n", uart_read_byte());
+				printf("Mini-UART Recv: %c\n", getchar());
 			}
 		}
 	}
