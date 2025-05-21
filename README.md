@@ -1,5 +1,3 @@
-# TODO
-- FS
 
 przez irq przychodzi nowy kod
 albo przychodzi info brak nowego kodu i idzie dalej

@@ -7,6 +7,8 @@ void wait_v0(uint32_t microseconds) {
 }
 
 void wait(uint32_t microseconds) {
+	wait_v0(microseconds);
+	return;
 	mmio_write(TIMER_C0, mmio_read(TIMER_CLO) + microseconds);
 	mmio_write(TIMER_CS, mmio_read(TIMER_CS) | 1);
 

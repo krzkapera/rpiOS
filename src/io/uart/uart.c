@@ -49,3 +49,45 @@ void uart_update() {
 		uart_write_byte(ch);
 	}
 }
+
+void uart_hex(unsigned int d) {
+	unsigned int n;
+	int c;
+	for (c = 28; c >= 0; c -= 4) {
+		// get highest tetrad
+		n = (d >> c) & 0xF;
+		// 0-9 => '0'-'9', 10-15 => 'A'-'F'
+		n += n > 9 ? 0x37 : 0x30;
+		uart_write_byte(n);
+	}
+}
+
+void uart_dump(void* ptr) {
+	unsigned long a, b, d;
+	unsigned char c;
+	for (a = (unsigned long)ptr; a < (unsigned long)ptr + 512; a += 16) {
+		uart_hex(a);
+		uart_write_text(": ");
+		for (b = 0; b < 16; b++) {
+			c = *((unsigned char*)(a + b));
+			d = (unsigned int)c;
+			d >>= 4;
+			d &= 0xF;
+			d += d > 9 ? 0x37 : 0x30;
+			uart_write_byte(d);
+			d = (unsigned int)c;
+			d &= 0xF;
+			d += d > 9 ? 0x37 : 0x30;
+			uart_write_byte(d);
+			uart_write_byte(' ');
+			if (b % 4 == 3) {
+				uart_write_byte(' ');
+			}
+		}
+		for (b = 0; b < 16; b++) {
+			c = *((unsigned char*)(a + b));
+			uart_write_byte(c < 32 || c >= 127 ? '.' : c);
+		}
+		uart_write_text("\r\n");
+	}
+}

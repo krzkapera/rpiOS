@@ -43,24 +43,24 @@ _start:
     
     mov     x0, #3 << 20
     msr     cpacr_el1, x0	 // Enable FP/SIMD at EL1
-    //
-    
-    mov x0, #MAIN_STACK
-    msr sp_el1, x0
 
-    mrs x0, hcr_el2
-    orr x0, x0, #(1 << 31)
-    msr hcr_el2, x0
-
-    mov x0, #(0b0101)
-    msr spsr_el3, x0
-
-    ldr     x0, =SCR_VALUE
-    msr     scr_el3, x0
-
-    adr x0, el1_entry
-    msr elr_el3, x0
-    eret
+ //   switch to EL 1
+ //   mov x0, #MAIN_STACK
+ //   msr sp_el1, x0
+//
+ //   mrs x0, hcr_el2
+ //   orr x0, x0, #(1 << 31)
+ //   msr hcr_el2, x0
+//
+ //   mov x0, #(0b0101)
+ //   msr spsr_el3, x0
+//
+ //   ldr     x0, =SCR_VALUE
+ //   msr     scr_el3, x0
+//
+ //   adr x0, el1_entry
+ //   msr elr_el3, x0
+ //   eret
     
 el1_entry:
     bl main
