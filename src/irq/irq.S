@@ -6,6 +6,7 @@ irq_init_vectors:
 
 .globl irq_enable
 irq_enable:
+    dsb sy
     msr daifclr, #2 /* clear the 'i' mask */
     ret
 
