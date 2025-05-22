@@ -11,8 +11,9 @@ void enable_interrupt_controller();
 
 enum {
 	IRQ_AUX = (1 << 29),
-	IRQ_TIMER_0 = 1,
-	IRQ_TIMER_1 = 2,
+	IRQ_TIMER_0 = 1 << 0,
+	IRQ_TIMER_1 = 1 << 1,
+	IRQ_TIMER_3 = 1 << 3,
 
 	ARMC_BASE = PERIPHERAL_BASE + 0xb000,
 

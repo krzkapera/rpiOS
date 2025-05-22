@@ -6,15 +6,14 @@ void uart_init() {
 	gpio_function(15, GPIO_FUNCTION_ALT5);
 
 	mmio_write(AUX_ENABLES, 1);
-	mmio_write(AUX_MU_IER_REG, 2);
+	mmio_write(AUX_MU_IER_REG, 0);
 	mmio_write(AUX_MU_CNTL_REG, 0);
 	mmio_write(AUX_MU_LCR_REG, 3);
 	mmio_write(AUX_MU_MCR_REG, 0);
-	mmio_write(AUX_MU_IER_REG, 2);
-	mmio_write(AUX_MU_CNTL_REG, 3);
 	mmio_write(AUX_MU_IIR_REG, 0xC6);
 	mmio_write(AUX_MU_BAUD_REG, AUX_MU_BAUD(115200));
 	mmio_write(AUX_MU_CNTL_REG, 3);
+	mmio_write(AUX_MU_IER_REG, 1);
 }
 
 uint32_t uart_is_read_byte_ready() {

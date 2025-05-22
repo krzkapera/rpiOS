@@ -10,6 +10,11 @@ enum {
 	TIMER_CHI = TIMER_BASE + 0x08,
 	TIMER_C0 = TIMER_BASE + 0x0C,
 	TIMER_C1 = TIMER_BASE + 0x10,
+	TIMER_C3 = TIMER_BASE + 0x18,
+
+	TIMER_0 = 1,
+	TIMER_1 = 1 << 1,
+	TIMER_3 = 1 << 3,
 };
 
 void wait(uint32_t microseconds);
