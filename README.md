@@ -3,7 +3,7 @@ przez irq przychodzi nowy kod
 albo przychodzi info brak nowego kodu i idzie dalej
 albo ze nowy kod, odbiera, zapisuje i restartuje
 
-    
+plink.exe -serial COM7 -sercfg 115200,8,n,1,N
 
 
     MMU i cache dla EL1:

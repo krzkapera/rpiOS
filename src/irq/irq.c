@@ -1,4 +1,5 @@
 #include "irq.h"
+#include "../io/system_timer/system_timer.h"
 #include "../io/uart/printf.h"
 #include "../io/uart/uart.h"
 
@@ -14,19 +15,27 @@ void show_invalid_entry_message(uint32_t type, uint64_t esr, uint64_t address) {
 	puts(", ERS: TODO, Address: TODO \n");
 }
 
-void enable_core0_interrupt_controller_AUX() {
-	mmio_write(IRQ0_SET_EN_0, IRQ_ON);
+void enable_core0_interrupt_controller() {
+	mmio_write(IRQ0_SET_EN_0, IRQ_AUX);
+	mmio_write(IRQ0_SET_EN_0, IRQ_TIMER_0);
 }
 
 void handle_irq() {
 	uint32_t irq = mmio_read(IRQ0_PENDING0);
 
 	while (irq) {
-		if (irq & IRQ_ON) {
-			irq &= ~IRQ_ON;
+		if (irq & IRQ_AUX) {
+			irq &= ~IRQ_AUX;
 			while ((mmio_read(AUX_MU_IIR_REG) & 4) == 4) {
 				printf("Mini-UART Recv: %c\n", getchar());
 			}
+		}
+
+		if (irq & IRQ_TIMER_0) {
+			irq &= ~IRQ_TIMER_0;
+
+			puts("timer\n");
+			mmio_write(TIMER_CS, mmio_read(TIMER_CS) | 1);
 		}
 	}
 }

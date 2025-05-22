@@ -7,10 +7,11 @@ void irq_init_vectors();
 void irq_enable();
 void irq_disable();
 
-void enable_core0_interrupt_controller_AUX();
+void enable_core0_interrupt_controller();
 
 enum {
-	IRQ_ON = (1 << 29),
+	IRQ_AUX = (1 << 29),
+	IRQ_TIMER_0 = 1,
 
 	ARMC_BASE = PERIPHERAL_BASE + 0xb000,
 
