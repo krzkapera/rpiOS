@@ -1,4 +1,5 @@
 #include "system_loader.h"
+#include "../io/system_timer/system_timer.h"
 #include "../io/uart/printf.h"
 #include "../io/uart/uart.h"
 #include "../power/power.h"
@@ -25,7 +26,7 @@ void read_data() {
 		buffer[buffer_length] = c;
 		buffer_length++;
 
-		if (c == 1 && buffer_length % 2 == 0 && buffer_length) {
+		if (c == 1 && buffer_length % 2 == 0 && buffer_length >= MIN_IMG_SIZE) {
 			expected_checksum = buffer[buffer_length - 2];
 			buffer[buffer_length - 2] = 0;
 			buffer[buffer_length - 1] = 0;
@@ -43,6 +44,8 @@ void read_data() {
 			printf("\n%d %d %d\n", buffer_length, expected_checksum, got_checksum);
 			if (expected_checksum == got_checksum) {
 				write_file();
+				puts("Rebooting...\n");
+				wait(1e3);
 				restart();
 			}
 		}

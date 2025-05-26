@@ -11,3 +11,5 @@ czemu mount_fs z maina nie dziala
 
 
 kernel_old=1 -> EL3, =0 -> EL2
+
+tail -f /tmp/mypipe | ../plink.exe -serial COM7 -sercfg 115200,8,n,1,N

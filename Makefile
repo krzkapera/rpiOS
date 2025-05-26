@@ -7,9 +7,9 @@ OFILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(CFILES))
 GCCFLAGS = -Wall -O0 -ffreestanding -nostdlib -nostartfiles
 GCCPATH = /opt/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin
 
-.PHONY: upload
+.PHONY: sd pi
 
-all: $(BUILD_DIR)/output/kernel8.img
+all: $(BUILD_DIR)/output/kernel8.img /tmp/mypipe
 
 $(BUILD_DIR)/boot.o: $(SRC_DIR)/boot.S | $(BUILD_DIR)
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
@@ -27,12 +27,18 @@ $(BUILD_DIR)/output/kernel8.img: $(BUILD_DIR)/boot.o $(OFILES) $(BUILD_DIR)/entr
 	$(GCCPATH)/aarch64-none-elf-ld -nostdlib $^ -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
 	$(GCCPATH)/aarch64-none-elf-objcopy -O binary $(BUILD_DIR)/kernel8.elf $(BUILD_DIR)/output/kernel8.img
 
-upload:
+sd: /tmp/mypipe
 	@sudo mount -t drvfs Q: /mnt/j 2> /dev/null || (echo "Nie ma karty" && exit 1)
 	cp $(BUILD_DIR)/output/kernel8.img /mnt/j/kernel8.img || exit 1
 	sudo umount /mnt/j
 	powershell.exe -Command "(New-Object -comObject Shell.Application).Namespace(17).ParseName('Q:').InvokeVerb('Eject'); Start-Sleep -Seconds 1"
 	# ../plink.exe -serial COM7 -sercfg 115200,8,n,1,N
+
+/tmp/mypipe:
+	mkfifo /tmp/mypipe
+
+pi: /tmp/mypipe
+	python3 send.py
 
 $(BUILD_DIR):
 	@$(shell mkdir -p $(dir $(OFILES)))
