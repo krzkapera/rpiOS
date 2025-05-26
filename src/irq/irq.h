@@ -30,4 +30,6 @@ enum {
 	IRQ0_CLR_EN_2 = ARMC_BASE + 0x228,
 };
 
+extern uint32_t ALLOWED_INTERRUPTS;
+
 #endif // __IRQ_H__

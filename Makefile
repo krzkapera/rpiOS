@@ -29,7 +29,7 @@ $(BUILD_DIR)/output/kernel8.img: $(BUILD_DIR)/boot.o $(OFILES) $(BUILD_DIR)/entr
 	sudo umount /mnt/j
 	powershell.exe -Command "(New-Object -comObject Shell.Application).Namespace(17).ParseName('Q:').InvokeVerb('Eject'); Start-Sleep -Seconds 1"
 	@date +"%b %d %Y %H:%M:%S"
-	../plink.exe -serial COM7 -sercfg 115200,8,n,1,N
+	# ../plink.exe -serial COM7 -sercfg 115200,8,n,1,N
 
 $(BUILD_DIR):
 	@$(shell mkdir -p $(dir $(OFILES)))

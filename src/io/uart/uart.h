@@ -31,5 +31,6 @@ uint8_t getchar();
 void uart_update();
 void uart_dump(void*);
 void puthex(unsigned int d);
+uint32_t uart_is_read_byte_ready();
 
 #endif // __UART_H__
