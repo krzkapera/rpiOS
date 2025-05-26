@@ -27,7 +27,7 @@ $(BUILD_DIR)/output/kernel8.img: $(BUILD_DIR)/boot.o $(OFILES) $(BUILD_DIR)/entr
 	$(GCCPATH)/aarch64-none-elf-ld -nostdlib $^ -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
 	$(GCCPATH)/aarch64-none-elf-objcopy -O binary $(BUILD_DIR)/kernel8.elf $(BUILD_DIR)/output/kernel8.img
 
-sd: /tmp/mypipe
+sd: all
 	@sudo mount -t drvfs Q: /mnt/j 2> /dev/null || (echo "Nie ma karty" && exit 1)
 	cp $(BUILD_DIR)/output/kernel8.img /mnt/j/kernel8.img || exit 1
 	sudo umount /mnt/j
@@ -37,7 +37,7 @@ sd: /tmp/mypipe
 /tmp/mypipe:
 	mkfifo /tmp/mypipe
 
-pi: /tmp/mypipe
+pi: all
 	python3 send.py
 
 $(BUILD_DIR):

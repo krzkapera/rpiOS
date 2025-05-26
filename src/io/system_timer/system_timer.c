@@ -6,3 +6,7 @@ void wait(uint32_t microseconds) {
 		asm volatile("nop");
 	}
 }
+
+uint32_t get_time() {
+	return mmio_read(TIMER_CLO);
+}

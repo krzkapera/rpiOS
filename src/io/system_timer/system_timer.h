@@ -18,5 +18,6 @@ enum {
 };
 
 void wait(uint32_t microseconds);
+uint32_t get_time();
 
 #endif // __SYS_TIMER_H__
