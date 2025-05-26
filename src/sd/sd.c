@@ -366,10 +366,18 @@ int sd_clk(unsigned int f) {
 	return SD_OK;
 }
 
+// https://github.com/raspberrypi/documentation/issues/1209
+void use_legacy_sd_controller() {
+	long addr = PERIPHERAL_BASE + 0x2000d0;
+	mmio_write(addr, mmio_read(addr) | 0b10);
+}
+
 /**
  * initialize EMMC to read SDHC card
  */
 int sd_init() {
+	use_legacy_sd_controller();
+
 	long r, cnt, ccs = 0;
 	// GPIO_CD
 	r = *GPFSEL4;

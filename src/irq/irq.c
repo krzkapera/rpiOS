@@ -16,8 +16,10 @@ void show_invalid_entry_message(uint32_t type, uint64_t esr, uint64_t address) {
 	puts(", ERS: TODO, Address: TODO \n");
 }
 
-void enable_interrupt_controller() {
+void enable_interrupts() {
+	irq_init_vectors();
 	mmio_write(IRQ0_SET_EN_0, ALLOWED_INTERRUPTS);
+	irq_enable();
 }
 
 uint32_t ALLOWED_INTERRUPTS = IRQ_AUX | IRQ_TIMER_1;

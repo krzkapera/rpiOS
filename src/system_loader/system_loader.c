@@ -1,7 +1,11 @@
 #include "system_loader.h"
 #include "../io/uart/printf.h"
 #include "../io/uart/uart.h"
+#include "../power/power.h"
+#include "../sd/fatfs/ff.h"
 #include <stdbool.h>
+
+void write_file();
 
 uint8_t buffer[BUFFER_SIZE] = {0};
 int buffer_length = 0;
@@ -21,7 +25,7 @@ void read_data() {
 		buffer[buffer_length] = c;
 		buffer_length++;
 
-		if (c == 1 && buffer_length % 2 == 0) {
+		if (c == 1 && buffer_length % 2 == 0 && buffer_length) {
 			expected_checksum = buffer[buffer_length - 2];
 			buffer[buffer_length - 2] = 0;
 			buffer[buffer_length - 1] = 0;
@@ -34,7 +38,42 @@ void read_data() {
 			buffer_length -= 2;
 			buffer_length /= 2;
 
-			printf("\n%d %d %d\n", buffer_length, expected_checksum, calc_checksum());
+			uint8_t got_checksum = calc_checksum();
+
+			printf("\n%d %d %d\n", buffer_length, expected_checksum, got_checksum);
+			if (expected_checksum == got_checksum) {
+				write_file();
+				restart();
+			}
 		}
 	}
+}
+
+void write_file() {
+	FATFS fs;
+	FRESULT fr = f_mount(&fs, "", 1);
+	if (fr != FR_OK) {
+		printf("f_mount() failed, fr = %d\n", fr);
+		while (1)
+			;
+	}
+
+	FIL file;
+	UINT bytesWritten;
+
+	fr = f_open(&file, "kernel8.img", FA_WRITE | FA_CREATE_ALWAYS);
+	if (fr != FR_OK) {
+		printf("Cannot open file: %d\n", fr);
+		while (1)
+			;
+	}
+
+	fr = f_write(&file, buffer, buffer_length, &bytesWritten);
+	if (fr != FR_OK || bytesWritten != buffer_length) {
+		printf("Write error: %d\n", fr);
+	} else {
+		printf("%u bytes saved\n", bytesWritten);
+	}
+
+	f_close(&file);
 }
