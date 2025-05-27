@@ -1,8 +1,8 @@
 #include "irq.h"
-#include "../io/system_timer/system_timer.h"
 #include "../io/uart/printf.h"
 #include "../io/uart/uart.h"
 #include "../system_loader/system_loader.h"
+#include "../system_timer/system_timer.h"
 
 const char entry_error_messages[16][32] = {
 	"SYNC_INVALID_EL1t",   "IRQ_INVALID_EL1t",	 "FIQ_INVALID_EL1t",   "SERROR_INVALID_EL1t",
@@ -35,7 +35,7 @@ void handle_irq() {
 	if (irq & IRQ_TIMER_1) {
 		irq &= ~IRQ_TIMER_1;
 
-		puts("timer\n");
 		mmio_write(TIMER_CS, mmio_read(TIMER_CS) | TIMER_1);
+		mmio_write(TIMER_C1, mmio_read(TIMER_CLO) + INTERRUPT_INTERVAL);
 	}
 }

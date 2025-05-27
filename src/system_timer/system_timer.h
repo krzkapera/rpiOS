@@ -1,7 +1,9 @@
 #ifndef __SYS_TIMER_H__
 #define __SYS_TIMER_H__
 
-#include "../mmio/mmio.h"
+#include "../io/mmio/mmio.h"
+
+#define INTERRUPT_INTERVAL 1000000
 
 enum {
 	TIMER_BASE = PERIPHERAL_BASE + 0x3000,
@@ -19,5 +21,6 @@ enum {
 
 void wait(uint32_t microseconds);
 uint32_t get_time();
+void init_timer();
 
 #endif // __SYS_TIMER_H__

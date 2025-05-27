@@ -4,12 +4,12 @@ BUILD_DIR = build
 CFILES = $(shell find $(SRC_DIR) -type f -name "*.c")
 OFILES = $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(CFILES))
 
-GCCFLAGS = -Wall -O0 -ffreestanding -nostdlib -nostartfiles
+GCCFLAGS = -Wall -O0 -ffreestanding -nostdlib -nostartfiles -mgeneral-regs-only
 GCCPATH = /opt/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin
 
 .PHONY: sd pi
 
-update_timestamp:
+update_timestamp: | $(BUILD_DIR)
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $(SRC_DIR)/kernel.c -o $(BUILD_DIR)/kernel.o
 
 all: update_timestamp $(BUILD_DIR)/output/kernel8.img /tmp/mypipe

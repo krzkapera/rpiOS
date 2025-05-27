@@ -26,8 +26,8 @@
 #ifndef __SD_H__
 #define __SD_H__
 
-#include "../io/system_timer/system_timer.h"
 #include "../io/uart/printf.h"
+#include "../system_timer/system_timer.h"
 
 #define SD_OK 0
 #define SD_TIMEOUT -1

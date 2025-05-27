@@ -1,9 +1,9 @@
 #include "io/gpio/gpio.h"
-#include "io/system_timer/system_timer.h"
 #include "io/uart/printf.h"
 #include "irq/irq.h"
 #include "power/power.h"
 #include "sd/fatfs/ff.h"
+#include "system_timer/system_timer.h"
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
@@ -21,7 +21,7 @@ void main() {
 
 	enable_interrupts();
 
-	mmio_write(TIMER_C1, mmio_read(TIMER_CLO) + 10 * 1000000);
+	init_timer();
 
 	while (1)
 		;

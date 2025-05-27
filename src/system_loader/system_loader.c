@@ -1,9 +1,9 @@
 #include "system_loader.h"
-#include "../io/system_timer/system_timer.h"
 #include "../io/uart/printf.h"
 #include "../io/uart/uart.h"
 #include "../power/power.h"
 #include "../sd/fatfs/ff.h"
+#include "../system_timer/system_timer.h"
 #include <stdbool.h>
 #include <string.h>
 
