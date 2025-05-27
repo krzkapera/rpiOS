@@ -12,7 +12,6 @@ extern uint32_t get_el();
 extern unsigned char _end;
 
 void blink_led();
-void mount_fs();
 
 void main() {
 	uart_init();

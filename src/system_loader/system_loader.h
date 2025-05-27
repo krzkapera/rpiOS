@@ -6,7 +6,6 @@
 #include <stdint.h>
 
 #define BUFFER_SIZE 2 * 1024 * 1024
-#define MIN_IMG_SIZE 2 * 20 * 1024
 
 void read_data();
 

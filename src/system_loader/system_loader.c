@@ -5,51 +5,87 @@
 #include "../power/power.h"
 #include "../sd/fatfs/ff.h"
 #include <stdbool.h>
+#include <string.h>
 
+uint8_t calc_checksum();
 void write_file();
+void clear_buffer();
+void update_system();
 
 uint8_t buffer[BUFFER_SIZE] = {0};
-int buffer_length = 0;
+uint32_t buffer_length = 0;
 uint8_t expected_checksum;
 
-uint8_t calc_checksum() {
-	uint8_t sum = 0;
-	for (int i = 0; i < buffer_length; i++) {
-		sum ^= buffer[i];
-	}
-	return sum;
-}
+uint32_t length = 0;
+uint8_t length_checksum;
+
+uint8_t started = 0;
 
 void read_data() {
+	if (!started) {
+		puts("receive start\n");
+		started = 1;
+	}
+
 	while (uart_is_read_byte_ready()) {
 		uint8_t c = getchar();
 		buffer[buffer_length] = c;
 		buffer_length++;
 
-		if (c == 1 && buffer_length % 2 == 0 && buffer_length >= MIN_IMG_SIZE) {
-			expected_checksum = buffer[buffer_length - 2];
-			buffer[buffer_length - 2] = 0;
-			buffer[buffer_length - 1] = 0;
+		if (c == 0xAA) {
+			if (buffer_length == 7) {
+				length = *(uint32_t*)buffer;
 
-			for (int i = 2; i < buffer_length; i += 2) {
-				buffer[i / 2] = buffer[i];
-				buffer[i] = 0;
-			}
+				uint8_t got_length_checksum = buffer[0] ^ buffer[1] ^ buffer[2] ^ buffer[3];
+				uint8_t expected_length_checksum = buffer[4];
 
-			buffer_length -= 2;
-			buffer_length /= 2;
+				expected_checksum = buffer[5];
 
-			uint8_t got_checksum = calc_checksum();
-
-			printf("\n%d %d %d\n", buffer_length, expected_checksum, got_checksum);
-			if (expected_checksum == got_checksum) {
-				write_file();
-				puts("Rebooting...\n");
-				wait(1e3);
-				restart();
+				if (got_length_checksum != expected_length_checksum) {
+					puts("length checksum nok\n");
+				}
+			} else if (buffer_length > 7 && buffer_length == length) {
+				if (calc_checksum() == expected_checksum) {
+					puts("all checksum ok\n");
+					update_system();
+				} else {
+					puts("all checksum nok\n");
+					clear_buffer();
+				}
 			}
 		}
 	}
+}
+
+uint8_t calc_checksum() {
+	uint8_t sum = 0;
+	for (int i = 6; i < buffer_length; i++) {
+		sum ^= buffer[i];
+	}
+	return sum;
+}
+
+void clear_buffer() {
+	memset(buffer, 0, BUFFER_SIZE);
+	buffer_length = 0;
+	length = 0;
+	started = 0;
+	puts("Buffer cleared\n");
+}
+
+void update_system() {
+	for (int i = 7; i < buffer_length - 1; i++) {
+		buffer[i - 7] = buffer[i];
+	}
+	for (int i = 1; i <= 8; i++) {
+		buffer[buffer_length - i] = 0;
+	}
+	buffer_length -= 8;
+
+	write_file();
+	puts("Rebooting...\n");
+	wait(1e3);
+	restart();
 }
 
 void write_file() {

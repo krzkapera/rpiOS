@@ -15,21 +15,25 @@ def process_file(file_path, pipe_path):
     with open(file_path, "rb") as f:
         data = f.read()
 
-    # data = os.urandom(37892 // 2)
+    full_length = len(data) + 8
 
-    checksum = calc_checksum(data)
+    print("data len:", len(data))
+    print("full len:", full_length)
 
-    print("len:", len(data))
+    length = full_length.to_bytes(4, "little")
+    length_checksum = calc_checksum(length).to_bytes()
+    checksum = calc_checksum(data).to_bytes()
 
-    message = bytearray([b for v in data for b in (v, 0)]) + bytes([checksum, 1])
+    message = length + length_checksum + checksum + bytes([0xAA]) + data + bytes([0xAA])
+
+    print("len checksum:", int.from_bytes(length_checksum))
+    print("all checksum:", int.from_bytes(checksum))
 
     with open(pipe_path, "wb", buffering=0) as pipe:
         for i in range(0, len(message), CHUNK_SIZE):
             pipe.write(message[i : i + CHUNK_SIZE])
             pipe.flush()
         time.sleep(0.01)
-
-    print("checksum:", checksum)
 
 
 file_path = "build/output/kernel8.img"

@@ -9,7 +9,10 @@ GCCPATH = /opt/gcc-arm-10.3-2021.07-x86_64-aarch64-none-elf/bin
 
 .PHONY: sd pi
 
-all: $(BUILD_DIR)/output/kernel8.img /tmp/mypipe
+update_timestamp:
+	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $(SRC_DIR)/kernel.c -o $(BUILD_DIR)/kernel.o
+
+all: update_timestamp $(BUILD_DIR)/output/kernel8.img /tmp/mypipe
 
 $(BUILD_DIR)/boot.o: $(SRC_DIR)/boot.S | $(BUILD_DIR)
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
