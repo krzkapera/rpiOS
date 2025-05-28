@@ -1,6 +1,7 @@
 #include "irq.h"
 #include "../io/uart/printf.h"
 #include "../io/uart/uart.h"
+#include "../scheduler/scheduler.h"
 #include "../system_loader/system_loader.h"
 #include "../system_timer/system_timer.h"
 
@@ -22,20 +23,24 @@ void enable_interrupts() {
 	irq_enable();
 }
 
+void disable_timer() {
+	mmio_write(IRQ0_CLR_EN_0, IRQ_TIMER_1);
+}
+
 uint32_t ALLOWED_INTERRUPTS = IRQ_AUX | IRQ_TIMER_1;
 
 void handle_irq() {
 	uint32_t irq = mmio_read(IRQ0_PENDING0);
 
 	if (irq & IRQ_AUX) {
-		irq &= ~IRQ_AUX;
+		disable_timer();
 		read_data();
 	}
 
 	if (irq & IRQ_TIMER_1) {
-		irq &= ~IRQ_TIMER_1;
-
 		mmio_write(TIMER_CS, mmio_read(TIMER_CS) | TIMER_1);
 		mmio_write(TIMER_C1, mmio_read(TIMER_CLO) + INTERRUPT_INTERVAL);
+
+		timer_tick();
 	}
 }

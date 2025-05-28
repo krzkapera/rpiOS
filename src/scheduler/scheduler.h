@@ -1,36 +1,9 @@
 #ifndef __SCHEDULER_H__
 #define __SCHEDULER_H__
 
+#include "../io/uart/printf.h"
 #include "../irq/irq.h"
 #include <stdint.h>
-
-struct cpu_context {
-	uint64_t x19;
-	uint64_t x20;
-	uint64_t x21;
-	uint64_t x22;
-	uint64_t x23;
-	uint64_t x24;
-	uint64_t x25;
-	uint64_t x26;
-	uint64_t x27;
-	uint64_t x28;
-	uint64_t fp;
-	uint64_t sp;
-	uint64_t pc;
-};
-
-struct task_struct {
-	struct cpu_context cpu_context;
-	uint64_t state;
-	uint64_t counter;
-	uint64_t priority;
-	uint64_t preempt_count;
-};
-
-extern void ret_from_fork();
-uint64_t get_free_page();
-void free_page(uint64_t p);
 
 #define PAGE_SHIFT 12
 #define TABLE_SHIFT 9
@@ -57,16 +30,43 @@ void free_page(uint64_t p);
 
 #define INIT_TASK {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 0, 1, 0}
 
+struct cpu_context {
+	uint64_t x19;
+	uint64_t x20;
+	uint64_t x21;
+	uint64_t x22;
+	uint64_t x23;
+	uint64_t x24;
+	uint64_t x25;
+	uint64_t x26;
+	uint64_t x27;
+	uint64_t x28;
+	uint64_t fp;
+	uint64_t sp;
+	uint64_t pc;
+};
+
+struct task_struct {
+	struct cpu_context cpu_context;
+	int64_t state;
+	int64_t counter;
+	int64_t priority;
+	int64_t preempt_count;
+};
+
 extern struct task_struct* current;
 extern struct task_struct* task[NR_TASKS];
-extern int nr_tasks;
+extern uint32_t nr_tasks;
 
-extern void sched_init(void);
-extern void schedule(void);
-extern void timer_tick(void);
-extern void preempt_disable(void);
-extern void preempt_enable(void);
-extern void switch_to(struct task_struct* next);
+extern void ret_from_fork();
+uint64_t get_free_page();
+void free_page(uint64_t p);
+void schedule();
+void timer_tick();
+void preempt_disable();
+void preempt_enable();
+void switch_to(struct task_struct* next);
 extern void cpu_switch_to(struct task_struct* prev, struct task_struct* next);
+uint32_t copy_process(uint64_t fn, uint64_t arg);
 
 #endif // __SCHEDULER_H__

@@ -42,7 +42,7 @@ static struct task_struct init_task = INIT_TASK;
 struct task_struct* current = &(init_task);
 struct task_struct* task[NR_TASKS] = {&(init_task)};
 
-int nr_tasks = 1;
+uint32_t nr_tasks = 1;
 
 void preempt_disable() {
 	current->preempt_count++;
@@ -53,6 +53,7 @@ void preempt_enable() {
 }
 
 void _schedule() {
+	puts("_schedule\n");
 	preempt_disable();
 	int next, c;
 	struct task_struct* p;
@@ -76,6 +77,7 @@ void _schedule() {
 			}
 		}
 	}
+	printf("switch to %d, all %d\n", next, nr_tasks);
 	switch_to(task[next]);
 	preempt_enable();
 }
