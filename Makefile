@@ -32,7 +32,7 @@ sd: all
 	# ../plink.exe -serial COM7 -sercfg 115200,8,n,1,N
 
 pi: all
-	python3 send.py
+	python3 update.py
 
 /tmp/mypipe:
 	mkfifo /tmp/mypipe
