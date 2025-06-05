@@ -27,8 +27,11 @@
 #define LAST_TASK task[NR_TASKS - 1]
 
 #define TASK_RUNNING 0
+#define TASK_ZOMBIE 1
 
-#define INIT_TASK {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 0, 1, 0}
+#define PF_KTHREAD 0x00000002
+
+#define INIT_TASK {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 0, 1, 0, 0, PF_KTHREAD}
 
 struct cpu_context {
 	uint64_t x19;
@@ -52,13 +55,14 @@ struct task_struct {
 	int64_t counter;
 	int64_t priority;
 	int64_t preempt_count;
+	uint64_t stack;
+	uint64_t flags;
 };
 
 extern struct task_struct* current;
 extern struct task_struct* task[NR_TASKS];
 extern uint32_t nr_tasks;
 
-extern void ret_from_fork();
 uint64_t get_free_page();
 void free_page(uint64_t p);
 void schedule();
@@ -67,6 +71,6 @@ void preempt_disable();
 void preempt_enable();
 void switch_to(struct task_struct* next);
 extern void cpu_switch_to(struct task_struct* prev, struct task_struct* next);
-uint32_t copy_process(uint64_t fn, uint64_t arg);
+void exit_process();
 
 #endif // __SCHEDULER_H__

@@ -1,4 +1,5 @@
 #include "scheduler.h"
+#include "../irq/entry.h"
 
 uint8_t mem_map[PAGING_PAGES] = {0};
 
@@ -14,28 +15,6 @@ uint64_t get_free_page() {
 
 void free_page(uint64_t p) {
 	mem_map[(p - LOW_MEMORY) / PAGE_SIZE] = 0;
-}
-
-uint32_t copy_process(uint64_t fn, uint64_t arg) {
-	preempt_disable();
-	struct task_struct* p;
-
-	p = (struct task_struct*)get_free_page();
-	if (!p)
-		return 1;
-	p->priority = current->priority;
-	p->state = TASK_RUNNING;
-	p->counter = p->priority;
-	p->preempt_count = 1;
-
-	p->cpu_context.x19 = fn;
-	p->cpu_context.x20 = arg;
-	p->cpu_context.pc = (uint64_t)ret_from_fork;
-	p->cpu_context.sp = (uint64_t)(p + THREAD_SIZE);
-	int pid = nr_tasks++;
-	task[pid] = p;
-	preempt_enable();
-	return 0;
 }
 
 static struct task_struct init_task = INIT_TASK;
@@ -108,4 +87,19 @@ void timer_tick() {
 	irq_enable();
 	_schedule();
 	irq_disable();
+}
+
+void exit_process() {
+	preempt_disable();
+	for (int i = 0; i < NR_TASKS; i++) {
+		if (task[i] == current) {
+			task[i]->state = TASK_ZOMBIE;
+			break;
+		}
+	}
+	if (current->stack) {
+		free_page(current->stack);
+	}
+	preempt_enable();
+	schedule();
 }

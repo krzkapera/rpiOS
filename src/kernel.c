@@ -4,6 +4,7 @@
 #include "power/power.h"
 #include "scheduler/scheduler.h"
 #include "sd/fatfs/ff.h"
+#include "sys/fork.h"
 #include "system_timer/system_timer.h"
 #include <stdarg.h>
 #include <stdint.h>
@@ -11,12 +12,63 @@
 
 extern uint32_t get_el();
 
+extern void call_sys_write();
+extern uint64_t call_sys_malloc();
+extern void call_sys_exit();
+extern uint64_t call_sys_clone();
+
 void blink_led();
 
 void process(char* array) {
 	while (1) {
 		puts("process\n");
 		wait(1e6);
+	}
+}
+
+void user_process1(char* array) {
+	char buf[3] = {0, '\n', 0};
+	while (1) {
+		for (int i = 0; i < 5; i++) {
+			buf[0] = array[i];
+			call_sys_write(buf);
+			wait(1e6);
+		}
+	}
+}
+
+void user_process() {
+	char buf[30] = {0};
+	memcpy(buf, "User process started\n", 22);
+	call_sys_write(buf);
+	uint64_t stack = call_sys_malloc();
+	if (stack < 0) {
+		printf("Error while allocating stack for process 1\n");
+		return;
+	}
+	int err = call_sys_clone((uint64_t)&user_process1, (uint64_t)"12345", stack);
+	if (err < 0) {
+		printf("Error while clonning process 1\n");
+		return;
+	}
+	stack = call_sys_malloc();
+	if (stack < 0) {
+		printf("Error while allocating stack for process 2\n");
+		return;
+	}
+	err = call_sys_clone((uint64_t)&user_process1, (uint64_t)"abcd", stack);
+	if (err < 0) {
+		printf("Error while clonning process 2\n");
+		return;
+	}
+	call_sys_exit();
+}
+
+void kernel_process() {
+	printf("Kernel process started. EL %d\r\n", get_el());
+	int err = move_to_user_mode((uint64_t)&user_process);
+	if (err < 0) {
+		printf("Error while moving process to user mode\n\r");
 	}
 }
 
@@ -31,22 +83,12 @@ void main() {
 	enable_interrupts();
 	init_timer();
 
-	int res = copy_process((unsigned long)&process, (unsigned long)"12345");
-	if (res != 0) {
-		printf("error while starting process 1");
+	int res = copy_process(PF_KTHREAD, (uint64_t)&kernel_process, (uint64_t)"12345", 0);
+	if (res < 0) {
+		printf("error while starting kernel process\n");
 	}
-	// res = copy_process((unsigned long)&process, (unsigned long)"abcde");
-	// if (res != 0) {
-	// 	printf("error while starting process 2");
-	// }
 
-	// puts("przeszlo\n");
-
-	while (1) {
-		// schedule();
-		puts("main\n");
-		wait(1e6);
-	}
+	while (1);
 }
 
 void blink_led() {

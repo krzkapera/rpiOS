@@ -22,9 +22,3 @@ cpu_switch_to:
     ldr    x30, [x8]
     mov    sp, x9
     ret
-
-.globl ret_from_fork
-ret_from_fork:
-    bl     schedule_tail
-    mov    x0, x20
-    blr    x19
