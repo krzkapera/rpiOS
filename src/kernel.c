@@ -5,15 +5,17 @@
 #include "scheduler/scheduler.h"
 #include "sd/fatfs/ff.h"
 #include "sys/fork.h"
-#include "sys/user_sys.h"
 #include "system_timer/system_timer.h"
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 
 extern uint32_t get_el();
-extern uint64_t user_begin;
-extern uint64_t user_end;
+
+extern void call_sys_write();
+extern uint64_t call_sys_malloc();
+extern void call_sys_exit();
+extern uint64_t call_sys_clone();
 
 void blink_led();
 
@@ -24,38 +26,47 @@ void process(char* array) {
 	}
 }
 
-void loop(char* str) {
-	char buf[2] = {""};
+void user_process1(char* array) {
+	char buf[3] = {0, '\n', 0};
 	while (1) {
 		for (int i = 0; i < 5; i++) {
-			buf[0] = str[i];
+			buf[0] = array[i];
 			call_sys_write(buf);
-			user_delay(1000000);
+			wait(1e6);
 		}
 	}
 }
 
 void user_process() {
-	call_sys_write("User process\n\r");
-	int pid = call_sys_fork();
-	if (pid < 0) {
-		call_sys_write("Error during fork\n\r");
-		call_sys_exit();
+	char buf[30] = {0};
+	memcpy(buf, "User process started\n", 22);
+	call_sys_write(buf);
+	uint64_t stack = call_sys_malloc();
+	if (stack < 0) {
+		printf("Error while allocating stack for process 1\n");
 		return;
 	}
-	if (pid == 0) {
-		loop("abcde");
-	} else {
-		loop("12345");
+	int err = call_sys_clone((uint64_t)&user_process1, (uint64_t)"12345", stack);
+	if (err < 0) {
+		printf("Error while clonning process 1\n");
+		return;
 	}
+	stack = call_sys_malloc();
+	if (stack < 0) {
+		printf("Error while allocating stack for process 2\n");
+		return;
+	}
+	err = call_sys_clone((uint64_t)&user_process1, (uint64_t)"abcd", stack);
+	if (err < 0) {
+		printf("Error while clonning process 2\n");
+		return;
+	}
+	call_sys_exit();
 }
 
 void kernel_process() {
 	printf("Kernel process started. EL %d\r\n", get_el());
-	uint64_t begin = (uint64_t)&user_begin;
-	uint64_t end = (uint64_t)&user_end;
-	uint64_t process = (uint64_t)&user_process;
-	int err = move_to_user_mode(begin, end - begin, process - begin);
+	int err = move_to_user_mode((uint64_t)&user_process);
 	if (err < 0) {
 		printf("Error while moving process to user mode\n\r");
 	}
@@ -72,7 +83,7 @@ void main() {
 	enable_interrupts();
 	init_timer();
 
-	int res = copy_process(PF_KTHREAD, (uint64_t)&kernel_process, 0);
+	int res = copy_process(PF_KTHREAD, (uint64_t)&kernel_process, (uint64_t)"12345", 0);
 	if (res < 0) {
 		printf("error while starting kernel process\n");
 	}

@@ -2,7 +2,7 @@
 #define _SYSREGS_H
 
 // ***************************************
-// SCTLR_EL1, System Control Register (EL1), Page 2025 of AArch64-Reference-Manual.
+// SCTLR_EL1, System Control Register (EL1), Page 2654 of AArch64-Reference-Manual.
 // ***************************************
 
 #define SCTLR_RESERVED (3 << 28) | (3 << 22) | (1 << 20) | (1 << 11)
@@ -18,14 +18,14 @@
 	 SCTLR_MMU_DISABLED)
 
 // ***************************************
-// HCR_EL2, Hypervisor Configuration Register (EL2), Page 1923 of AArch64-Reference-Manual.
+// HCR_EL2, Hypervisor Configuration Register (EL2), Page 2487 of AArch64-Reference-Manual.
 // ***************************************
 
 #define HCR_RW (1 << 31)
 #define HCR_VALUE HCR_RW
 
 // ***************************************
-// SCR_EL3, Secure Configuration Register (EL3), Page 2022 of AArch64-Reference-Manual.
+// SCR_EL3, Secure Configuration Register (EL3), Page 2648 of AArch64-Reference-Manual.
 // ***************************************
 
 #define SCR_RESERVED (3 << 4)
@@ -34,7 +34,7 @@
 #define SCR_VALUE (SCR_RESERVED | SCR_RW | SCR_NS)
 
 // ***************************************
-// SPSR_EL3, Saved Program Status Register (EL3) Page 288 of AArch64-Reference-Manual.
+// SPSR_EL3, Saved Program Status Register (EL3) Page 389 of AArch64-Reference-Manual.
 // ***************************************
 
 #define SPSR_MASK_ALL (7 << 6)
@@ -42,11 +42,10 @@
 #define SPSR_VALUE (SPSR_MASK_ALL | SPSR_EL1h)
 
 // ***************************************
-// ESR_EL1, Exception Syndrome Register (EL1). Page 1899 of AArch64-Reference-Manual.
+// ESR_EL1, Exception Syndrome Register (EL1). Page 2431 of AArch64-Reference-Manual.
 // ***************************************
 
 #define ESR_ELx_EC_SHIFT 26
 #define ESR_ELx_EC_SVC64 0x15
-#define ESR_ELx_EC_DABT_LOW 0x24
 
 #endif
