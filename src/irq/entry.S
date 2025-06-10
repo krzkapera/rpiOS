@@ -2,7 +2,7 @@
 #include "entry.h"
 
 
-#define __NR_syscalls 4
+#define NR_SYSCALLS 4
 
 #define SYS_WRITE_NUMBER 0 // syscal numbers
 #define SYS_MALLOC_NUMBER 1
@@ -173,7 +173,7 @@ stbl	.req	x27					// syscall table pointer
 el0_svc:
 	adr	stbl, sys_call_table
 	uxtw	scno, w8
-	mov	sc_nr, #__NR_syscalls
+	mov	sc_nr, #NR_SYSCALLS
 	bl	irq_enable
 	cmp     scno, sc_nr
 	b.hs	ni_sys

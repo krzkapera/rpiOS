@@ -1,7 +1,7 @@
 #ifndef __SYS_TIMER_H__
 #define __SYS_TIMER_H__
 
-#include "../io/mmio/mmio.h"
+#include "../io/mmio.h"
 
 #define INTERRUPT_INTERVAL 1000000
 

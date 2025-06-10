@@ -1,10 +1,10 @@
-#ifndef __GPIO_H__
-#define __GPIO_H__
+#ifndef __MMIO_H__
+#define __MMIO_H__
 
-#include "../mmio/mmio.h"
 #include <stdint.h>
 
 enum {
+	PERIPHERAL_BASE = 0xFE000000,
 	GPIO_BASE = PERIPHERAL_BASE + 0x200000,
 
 	GPFSELn = GPIO_BASE,
@@ -21,4 +21,7 @@ enum {
 
 void gpio_function(uint32_t pin_number, uint32_t function);
 
-#endif // __GPIO_H__
+void mmio_write(long reg, uint32_t val);
+uint32_t mmio_read(long reg);
+
+#endif // __MMIO_H__

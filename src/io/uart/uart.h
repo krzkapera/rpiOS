@@ -1,7 +1,7 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-#include "../gpio/gpio.h"
+#include "../mmio.h"
 
 enum {
 	AUX_BASE = GPIO_BASE + 0x15000,

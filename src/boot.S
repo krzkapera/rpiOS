@@ -1,6 +1,6 @@
-.section ".text.boot"  // Make sure the linker puts this at the start of the kernel image
+#include "mem/mem.h"
 
-#define MAIN_STACK      0x400000
+.section ".text.boot"  // Make sure the linker puts this at the start of the kernel image
 
 #define SCR_RW				(1 << 10)
 #define SCR_NS				(1 << 0)
@@ -19,7 +19,7 @@ _start:
 1:  // We're on the main core!
 
     // Set stack to start below our code
-    mov     sp, #MAIN_STACK
+    mov     sp, #LOW_MEMORY
 
     // Clean the BSS section
     ldr     x1, =__bss_start
@@ -31,7 +31,7 @@ _start:
 
 4:  nop
 
-    // enable floating point registers in, used in printf
+    // enable floating point registers, used in printf
     MRS     x0, cptr_el3
     BIC     x0, x0, #(1 << 31)
     BIC     x0, x0, #(1 << 10)
@@ -42,7 +42,7 @@ _start:
     msr     cpacr_el1, x0	 // Enable FP/SIMD at EL1
 
 //    switch to EL 1
-   mov x0, #MAIN_STACK
+   mov x0, #LOW_MEMORY
    msr sp_el1, x0
 
    mrs x0, hcr_el2

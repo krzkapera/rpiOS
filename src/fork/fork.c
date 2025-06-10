@@ -1,7 +1,7 @@
 #include "fork.h"
 #include "../io/uart/printf.h"
 #include "../irq/entry.h"
-#include "../scheduler/scheduler.h"
+#include "../mem/mem.h"
 #include <string.h>
 
 extern void ret_from_fork();

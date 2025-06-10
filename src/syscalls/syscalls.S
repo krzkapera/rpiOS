@@ -1,4 +1,4 @@
-#define __NR_syscalls 4
+#define NR_SYSCALLS 4
 
 #define SYS_WRITE_NUMBER 0
 #define SYS_MALLOC_NUMBER 1

@@ -1,6 +1,6 @@
+#include "../fork/fork.h"
 #include "../io/uart/printf.h"
-#include "../scheduler/scheduler.h"
-#include "./fork.h"
+#include "../mem/mem.h"
 
 void sys_write(char* buf) {
 	printf(buf);

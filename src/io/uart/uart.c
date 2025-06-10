@@ -1,5 +1,5 @@
 #include "uart.h"
-#include "../gpio/gpio.h"
+#include "../mmio.h"
 
 void uart_init() {
 	gpio_function(14, GPIO_FUNCTION_ALT5);
@@ -25,8 +25,7 @@ uint32_t uart_is_write_byte_ready() {
 }
 
 uint8_t getchar() {
-	while (!uart_is_read_byte_ready())
-		;
+	while (!uart_is_read_byte_ready());
 	return (uint8_t)mmio_read(AUX_MU_IO_REG);
 }
 
@@ -34,8 +33,7 @@ void putchar(uint8_t ch) {
 	if (ch == '\n') {
 		putchar('\r');
 	}
-	while (!uart_is_write_byte_ready())
-		;
+	while (!uart_is_write_byte_ready());
 	mmio_write(AUX_MU_IO_REG, (uint32_t)ch);
 }
 

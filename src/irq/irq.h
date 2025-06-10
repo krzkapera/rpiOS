@@ -1,7 +1,7 @@
 #ifndef __IRQ_H__
 #define __IRQ_H__
 
-#include "../io/mmio/mmio.h"
+#include "../io/mmio.h"
 
 void irq_init_vectors();
 void irq_enable();

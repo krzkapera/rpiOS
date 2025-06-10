@@ -23,7 +23,7 @@ uint8_t started = 0;
 
 void read_data() {
 	if (!started) {
-		puts("receive start\n");
+		puts("Update started\n");
 		started = 1;
 	}
 

@@ -1,5 +1,12 @@
-#include "gpio.h"
-#include <stdint.h>
+#include "mmio.h"
+
+void mmio_write(long reg, uint32_t val) {
+	*(volatile uint32_t*)reg = val;
+}
+
+uint32_t mmio_read(long reg) {
+	return *(volatile uint32_t*)reg;
+}
 
 void gpio_function(uint32_t pin_number, uint32_t function) {
 	uint32_t field_mask = (1 << 3) - 1;

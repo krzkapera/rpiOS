@@ -1,22 +1,17 @@
-#include "io/gpio/gpio.h"
+#include "fork/fork.h"
+#include "io/mmio.h"
 #include "io/uart/printf.h"
 #include "irq/irq.h"
 #include "power/power.h"
 #include "scheduler/scheduler.h"
 #include "sd/fatfs/ff.h"
-#include "sys/fork.h"
+#include "syscalls/syscalls.h"
 #include "system_timer/system_timer.h"
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
 
 extern uint32_t get_el();
-
-extern void call_sys_write();
-extern uint64_t call_sys_malloc();
-extern void call_sys_exit();
-extern uint64_t call_sys_clone();
-
 void blink_led();
 
 void process(char* array) {
