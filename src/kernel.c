@@ -12,8 +12,8 @@
 #include <string.h>
 
 extern uint32_t get_el();
-// extern uint64_t user_begin;
-// extern uint64_t user_end;
+extern uint64_t user_start;
+extern uint64_t user_end;
 
 void blink_led();
 
@@ -37,29 +37,31 @@ void loop(char* str) {
 
 void user_process() {
 	call_sys_write("User process\n\r");
-	int pid = call_sys_fork();
-	if (pid < 0) {
-		call_sys_write("Error during fork\n\r");
-		call_sys_exit();
-		return;
-	}
-	if (pid == 0) {
-		loop("abcde");
-	} else {
-		loop("12345");
-	}
+	loop("abcde");
+	// int pid = call_sys_fork();
+	// if (pid < 0) {
+	// 	call_sys_write("Error during fork\n\r");
+	// 	call_sys_exit();
+	// 	return;
+	// }
+	// if (pid == 0) {
+	// 	loop("abcde");
+	// } else {
+	// 	loop("12345");
+	// }
 }
 
-// void kernel_process() {
-// 	printf("Kernel process started. EL %d\r\n", get_el());
-// 	uint64_t begin = (uint64_t)&user_begin;
-// 	uint64_t end = (uint64_t)&user_end;
-// 	uint64_t process = (uint64_t)&user_process;
-// 	int err = move_to_user_mode(begin, end - begin, process - begin);
-// 	if (err < 0) {
-// 		printf("Error while moving process to user mode\n\r");
-// 	}
-// }
+void kernel_process() {
+	printf("pid 1 started in EL %c\n", get_el() + '0');
+
+	uint64_t user_size = ((uint64_t)(&user_end)) - ((uint64_t)(&user_start));
+
+	int err = prepare_move_to_user((uint64_t)&user_start, user_size,
+								   ((uint64_t)user_process) - (uint64_t)&user_start);
+	if (err < 0)
+		puts("Failed to move to user mode!\n");
+	while (1);
+}
 
 void main() {
 	uart_init();
@@ -72,12 +74,14 @@ void main() {
 	enable_interrupts();
 	init_timer();
 
-	// int res = copy_process(PF_KTHREAD, (uint64_t)&kernel_process, 0);
-	// if (res < 0) {
-	// 	printf("error while starting kernel process\n");
-	// }
+	int res = copy_process(KTHREAD, (uint64_t)&kernel_process, 0);
+	if (res <= 0) {
+		puts("fork error\n");
+	}
 
-	while (1);
+	while (1) {
+		// schedule();
+	}
 }
 
 void blink_led() {

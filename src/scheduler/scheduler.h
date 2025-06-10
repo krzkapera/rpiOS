@@ -1,32 +1,23 @@
-#ifndef __SCHEDULER_H__
-#define __SCHEDULER_H__
+#ifndef SCHED_H
+#define SCHED_H
 
-#include "../io/uart/printf.h"
-#include "../irq/irq.h"
-#include "../mmu/pgd.h"
+#define CORE_CONTEXT_OFFSET 0
+
+#ifndef __ASSEMBLER__
+
 #include <stdint.h>
 
-#define THREAD_CPU_CONTEXT 0
-#define THREAD_SIZE 4096
-
 #define NR_TASKS 64
-
-#define FIRST_TASK task[0]
-#define LAST_TASK task[NR_TASKS - 1]
-
 #define TASK_RUNNING 0
 #define TASK_ZOMBIE 1
 
-#define PF_KTHREAD 0x00000002
+#define MAX_PAGE_COUNT 16
 
-#define INIT_TASK                                                                                  \
-	{                                                                                              \
-		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 0, 15, 0, PF_KTHREAD, {                        \
-			0, 0, {{0}}, 0, {0}                                                                    \
-		}                                                                                          \
-	}
+extern struct task_struct* current;
+extern struct task_struct* task[NR_TASKS];
+extern int nr_tasks;
 
-struct cpu_context {
+struct core_context {
 	uint64_t x19;
 	uint64_t x20;
 	uint64_t x21;
@@ -39,26 +30,22 @@ struct cpu_context {
 	uint64_t x28;
 	uint64_t fp;
 	uint64_t sp;
-	uint64_t pc;
+	uint64_t lr;
 };
 
-#define MAX_PROCESS_PAGES 16
-
 struct user_page {
-	uint64_t phys_addr;
-	uint64_t virt_addr;
+	uint64_t pa;
+	uint64_t uva;
 };
 
 struct mm_struct {
 	uint64_t pgd;
-	int32_t user_pages_count;
-	struct user_page user_pages[MAX_PROCESS_PAGES];
-	int kernel_pages_count;
-	uint64_t kernel_pages[MAX_PROCESS_PAGES];
+	struct user_page user_pages[MAX_PAGE_COUNT];
+	uint64_t kernel_pages[MAX_PAGE_COUNT];
 };
 
 struct task_struct {
-	struct cpu_context cpu_context;
+	struct core_context core_context;
 	long state;
 	long counter;
 	long priority;
@@ -67,16 +54,24 @@ struct task_struct {
 	struct mm_struct mm;
 };
 
-extern struct task_struct* current;
-extern struct task_struct* task[NR_TASKS];
-extern uint32_t nr_tasks;
-
-void schedule();
-void timer_tick();
+void core_switch_to(struct task_struct* prev, struct task_struct* next);
+void set_pgd(uint64_t pgd);
 void preempt_disable();
 void preempt_enable();
+void _schedule();
+void schedule();
 void switch_to(struct task_struct* next);
-extern void cpu_switch_to(struct task_struct* prev, struct task_struct* next);
+void timer_tick();
 void exit_process();
+void sched_init();
 
-#endif // __SCHEDULER_H__
+#define INIT_TASK                                                                                  \
+	/* core_context */ {                                                                           \
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, /* state, counter, priority, preempt_count */ 0,  \
+			0, 1, 0, /* flags */ KTHREAD, /* mm */ {                                               \
+			0, {{0}}, {0}                                                                          \
+		}                                                                                          \
+	}
+
+#endif /* __ASSEMBLER__ */
+#endif /* SCHED_H */

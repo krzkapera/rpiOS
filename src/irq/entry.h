@@ -25,4 +25,11 @@
 #define S_FRAME_SIZE 272
 #define S_X0 0
 
+#ifndef __ASSEMBLER__
+
+void ret_from_fork();
+// void err_hang();
+
+#endif /* __ASSEMBLER */
+
 #endif // __ENTRY_H__

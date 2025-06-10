@@ -168,7 +168,7 @@ stbl	.req	x27					// syscall table pointer
 el0_svc:
 	adr	stbl, sys_call_table
 	uxtw	scno, w8
-	mov	sc_nr, #__NR_syscalls
+	mov	sc_nr, #NR_SYSCALLS
 	bl	irq_enable
 	cmp     scno, sc_nr
 	b.hs	ni_sys
@@ -189,7 +189,7 @@ el0_da:
 	bl	irq_enable
 	mrs	x0, far_el1
 	mrs	x1, esr_el1			
-	bl	do_mem_abort
+	bl	do_data_abort
 	cmp x0, 0
 	b.eq 1f
 	handle_invalid_entry 0, DATA_ABORT_ERROR
@@ -199,7 +199,7 @@ el0_da:
 
 .globl ret_from_fork
 ret_from_fork:
-	bl	schedule_tail
+	bl	preempt_enable
 	cbz	x19, ret_to_user
 	mov	x0, x20
 	blr	x19

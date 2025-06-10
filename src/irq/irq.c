@@ -13,9 +13,7 @@ const char entry_error_messages[18][32] = {
 	"SYNC_ERROR",		   "SYSCALL_ERROR"};
 
 void show_invalid_entry_message(uint32_t type, uint64_t esr, uint64_t address) {
-	puts("ERROR CAUGHT: ");
-	puts(entry_error_messages[type]);
-	puts(", ERS: TODO, Address: TODO \n");
+	printf("ERROR CAUGHT: %s, ESR: %d\n", entry_error_messages[type], esr);
 }
 
 void enable_interrupts() {

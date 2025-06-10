@@ -1,12 +1,14 @@
-#include "scheduler.h"
-#include "../irq/entry.h"
+#include "../io/uart/printf.h"
+#include "../irq/irq.h"
 #include "../mmu/mm.h"
+#include "../sys/fork.h"
 
 static struct task_struct init_task = INIT_TASK;
-struct task_struct* current = &(init_task);
-struct task_struct* task[NR_TASKS] = {&(init_task)};
-
-uint32_t nr_tasks = 1;
+struct task_struct* current = &init_task;
+struct task_struct* task[NR_TASKS] = {
+	&init_task,
+};
+int nr_tasks = 1;
 
 void preempt_disable() {
 	current->preempt_count++;
@@ -41,7 +43,7 @@ void _schedule() {
 			}
 		}
 	}
-	printf("switch to %d, all %d\n", next, nr_tasks);
+	printf("switch to %d\n", next);
 	switch_to(task[next]);
 	preempt_enable();
 }
@@ -57,11 +59,7 @@ void switch_to(struct task_struct* next) {
 	struct task_struct* prev = current;
 	current = next;
 	set_pgd(next->mm.pgd);
-	cpu_switch_to(prev, next);
-}
-
-void schedule_tail() {
-	preempt_enable();
+	core_switch_to(prev, next);
 }
 
 void timer_tick() {
@@ -77,12 +75,7 @@ void timer_tick() {
 
 void exit_process() {
 	preempt_disable();
-	for (int i = 0; i < NR_TASKS; i++) {
-		if (task[i] == current) {
-			task[i]->state = TASK_ZOMBIE;
-			break;
-		}
-	}
+	current->state = TASK_ZOMBIE;
 	preempt_enable();
 	schedule();
 }

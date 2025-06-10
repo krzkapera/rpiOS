@@ -1,14 +1,26 @@
-#ifndef __SYS_H__
-#define __SYS_H__
+#ifndef SYS_H
+#define SYS_H
 
-#define __NR_syscalls 4
+#define NR_SYSCALLS 3
 
-#ifndef __ASM__
+#define SYS_WRITE_NUM 0
+#define SYS_FORK_NUM 1
+#define SYS_EXIT_NUM 2
+
+#ifndef __ASSEMBLER__
+
 #include <stdint.h>
 
 void sys_write(char* buf);
-int32_t sys_fork();
+int sys_fork();
+void sys_exit();
 
-#endif
+void call_sys_write(char* buf);
+int call_sys_fork();
+void call_sys_exit();
 
-#endif // __SYS_H__
+void sys_call_table_relocate();
+
+#endif /* __ASSEMBLER__ */
+
+#endif /* SYS_H */
