@@ -1,6 +1,6 @@
 SECTIONS
 {
-	. = 0xffff000000000000;
+	. = 0x0;
 	.text.boot : { *(.text.boot) }
 	. = ALIGN(0x00001000);
 	user_begin = .;

@@ -4,6 +4,8 @@
 
 .section ".text.boot"
 
+#define MAIN_STACK      0x400000
+
 .globl _start
 _start:
 	mrs	x0, mpidr_el1		
@@ -49,8 +51,9 @@ el1_entry:
 
 	bl 	__create_page_tables
 
-	mov	x0, #VA_START			
-	add	sp, x0, #LOW_MEMORY
+	// mov	x0, #VA_START			
+	// add	sp, x0, #LOW_MEMORY
+	mov sp, #MAIN_STACK
 
 	adrp	x0, pg_dir				
 	msr	ttbr1_el1, x0
@@ -64,8 +67,8 @@ el1_entry:
 
 	ldr	x2, =main
 
-	mov	x0, #SCTLR_MMU_ENABLED				
-	msr	sctlr_el1, x0
+	// mov	x0, #SCTLR_MMU_ENABLED				
+	// msr	sctlr_el1, x0
 
 	br 	x2
 
