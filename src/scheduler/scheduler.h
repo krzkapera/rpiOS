@@ -3,20 +3,8 @@
 
 #include "../io/uart/printf.h"
 #include "../irq/irq.h"
+#include "../mmu/pgd.h"
 #include <stdint.h>
-
-#define PAGE_SHIFT 12
-#define TABLE_SHIFT 9
-#define SECTION_SHIFT (PAGE_SHIFT + TABLE_SHIFT)
-
-#define PAGE_SIZE (1 << PAGE_SHIFT)
-#define SECTION_SIZE (1 << SECTION_SHIFT)
-
-#define LOW_MEMORY (2 * SECTION_SIZE)
-#define HIGH_MEMORY 0x20000000
-
-#define PAGING_MEMORY (HIGH_MEMORY - LOW_MEMORY)
-#define PAGING_PAGES (PAGING_MEMORY / PAGE_SIZE)
 
 #define THREAD_CPU_CONTEXT 0
 #define THREAD_SIZE 4096
@@ -31,7 +19,12 @@
 
 #define PF_KTHREAD 0x00000002
 
-#define INIT_TASK {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 0, 1, 0, 0, PF_KTHREAD}
+#define INIT_TASK                                                                                  \
+	{                                                                                              \
+		{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, 0, 0, 15, 0, PF_KTHREAD, {                        \
+			0, 0, {{0}}, 0, {0}                                                                    \
+		}                                                                                          \
+	}
 
 struct cpu_context {
 	uint64_t x19;
@@ -49,22 +42,35 @@ struct cpu_context {
 	uint64_t pc;
 };
 
+#define MAX_PROCESS_PAGES 16
+
+struct user_page {
+	uint64_t phys_addr;
+	uint64_t virt_addr;
+};
+
+struct mm_struct {
+	uint64_t pgd;
+	int32_t user_pages_count;
+	struct user_page user_pages[MAX_PROCESS_PAGES];
+	int kernel_pages_count;
+	uint64_t kernel_pages[MAX_PROCESS_PAGES];
+};
+
 struct task_struct {
 	struct cpu_context cpu_context;
-	int64_t state;
-	int64_t counter;
-	int64_t priority;
-	int64_t preempt_count;
-	uint64_t stack;
+	long state;
+	long counter;
+	long priority;
+	long preempt_count;
 	uint64_t flags;
+	struct mm_struct mm;
 };
 
 extern struct task_struct* current;
 extern struct task_struct* task[NR_TASKS];
 extern uint32_t nr_tasks;
 
-uint64_t get_free_page();
-void free_page(uint64_t p);
 void schedule();
 void timer_tick();
 void preempt_disable();

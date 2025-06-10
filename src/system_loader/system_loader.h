@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define BUFFER_SIZE 1024 * 1024
+#define BUFFER_SIZE 16 // * 1024 * 1024
 
 void read_data();
 

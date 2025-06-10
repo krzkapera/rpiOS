@@ -15,10 +15,12 @@ all: $(BUILD_DIR)/output/kernel8.img | /tmp/mypipe
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $(SRC_DIR)/kernel.c -o $(BUILD_DIR)/kernel.o
 
 $(BUILD_DIR)/%_S.o: $(SRC_DIR)/%.S | $(BUILD_DIR)
-	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
+	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -D__ASM__ -c $< -o $@
+	$(GCCPATH)/aarch64-none-elf-size $@
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	$(GCCPATH)/aarch64-none-elf-gcc $(GCCFLAGS) -c $< -o $@
+	$(GCCPATH)/aarch64-none-elf-size $@
 
 $(BUILD_DIR)/output/kernel8.img: $(OFILES)
 	$(GCCPATH)/aarch64-none-elf-ld -nostdlib $^ -T $(SRC_DIR)/link.ld -o $(BUILD_DIR)/kernel8.elf
