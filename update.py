@@ -11,6 +11,7 @@ def calc_checksum(data):
 
 
 CHUNK_SIZE = 128
+WAIT_TIME = 0.01
 
 
 def process_file(file_path, pipe_path):
@@ -35,7 +36,7 @@ def process_file(file_path, pipe_path):
         for i in range(0, len(message), CHUNK_SIZE):
             pipe.write(message[i : i + CHUNK_SIZE])
             pipe.flush()
-        time.sleep(0.01)
+        time.sleep(WAIT_TIME)
 
 
 file_path = "build/output/kernel8.img"

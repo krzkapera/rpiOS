@@ -93,8 +93,7 @@ void write_file() {
 	FRESULT fr = f_mount(&fs, "", 1);
 	if (fr != FR_OK) {
 		printf("f_mount() failed, fr = %d\n", fr);
-		while (1)
-			;
+		while (1);
 	}
 
 	FIL file;
@@ -103,8 +102,7 @@ void write_file() {
 	fr = f_open(&file, "kernel8.img", FA_WRITE | FA_CREATE_ALWAYS);
 	if (fr != FR_OK) {
 		printf("Cannot open file: %d\n", fr);
-		while (1)
-			;
+		while (1);
 	}
 
 	fr = f_write(&file, buffer, buffer_length, &bytesWritten);
