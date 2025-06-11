@@ -14,7 +14,7 @@ const char entry_error_messages[16][32] = {
 void show_invalid_entry_message(uint32_t type, uint64_t esr, uint64_t address) {
 	puts("ERROR CAUGHT: ");
 	puts(entry_error_messages[type]);
-	puts(", ERS: TODO, Address: TODO \n");
+	puts("\n");
 }
 
 void enable_interrupts() {

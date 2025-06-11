@@ -1,13 +1,6 @@
 #include "sysregs.h"
 #include "entry.h"
-
-
-#define NR_SYSCALLS 4
-
-#define SYS_WRITE_NUMBER 0 // syscal numbers
-#define SYS_MALLOC_NUMBER 1
-#define SYS_CLONE_NUMBER 2
-#define SYS_EXIT_NUMBER 3
+#include "../syscalls/syscalls.h"
 
 .macro	kernel_entry, el
 	sub	sp, sp, #S_FRAME_SIZE
@@ -102,11 +95,11 @@ vectors:
 
 .macro handle_invalid_entry el, type
 	kernel_entry \el
-	mov	x0, #\type
-	mrs	x1, esr_el1
-	mrs	x2, elr_el1
-	bl	show_invalid_entry_message
-	b	err_hang
+	mov		x0, #\type
+	mrs		x1, esr_el1
+	mrs		x2, elr_el1
+	bl		show_invalid_entry_message
+	b		err_hang
 .endm
 
 sync_invalid_el1t:
@@ -155,14 +148,14 @@ el1_irq:
 
 el0_irq:
 	kernel_entry 0 
-	bl	handle_irq
+	bl		handle_irq
 	kernel_exit 0 
 
 el0_sync:
 	kernel_entry 0
-	mrs	x25, esr_el1
-	lsr	x24, x25, #ESR_ELx_EC_SHIFT
-	cmp	x24, #ESR_ELx_EC_SVC64
+	mrs		x25, esr_el1
+	lsr		x24, x25, #ESR_ELx_EC_SHIFT
+	cmp		x24, #ESR_ELx_EC_SVC64
 	b.eq	el0_svc
 	handle_invalid_entry 0, SYNC_ERROR
 
@@ -171,34 +164,34 @@ scno	.req	x26					// syscall number
 stbl	.req	x27					// syscall table pointer
 
 el0_svc:
-	adr	stbl, sys_call_table
+	adr		stbl, sys_call_table
 	uxtw	scno, w8
-	mov	sc_nr, #NR_SYSCALLS
-	bl	irq_enable
+	mov		sc_nr, #NR_SYSCALLS
+	bl		irq_enable
 	cmp     scno, sc_nr
 	b.hs	ni_sys
 
-	ldr	x16, [stbl, scno, lsl #3]
-	blr	x16
-	b	ret_from_syscall
+	ldr		x16, [stbl, scno, lsl #3]
+	blr		x16
+	b		ret_from_syscall
 
 ni_sys:
 	handle_invalid_entry 0, SYSCALL_ERROR
 
 ret_from_syscall:
-	bl	irq_disable				
-	str	x0, [sp, #S_X0]
+	bl		irq_disable				
+	str		x0, [sp, #S_X0]
 	kernel_exit 0
 
 .globl ret_from_fork
 ret_from_fork:
-	bl	schedule_tail
-	cbz	x19, ret_to_user
-	mov	x0, x20
-	blr	x19
+	bl		schedule_tail
+	cbz		x19, ret_to_user
+	mov		x0, x20
+	blr		x19
 
 ret_to_user:
-	bl irq_disable				
+	bl 		irq_disable				
 	kernel_exit 0 
 
 .globl err_hang

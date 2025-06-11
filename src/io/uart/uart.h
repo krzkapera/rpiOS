@@ -28,7 +28,6 @@ void uart_init();
 void puts(const char*);
 void putchar(uint8_t);
 uint8_t getchar();
-void uart_update();
 void uart_dump(void*);
 void puthex(unsigned int d);
 uint32_t uart_is_read_byte_ready();

@@ -50,8 +50,6 @@ extern struct task_struct* current;
 extern struct task_struct* task[NR_TASKS];
 extern uint32_t nr_tasks;
 
-uint64_t get_free_page();
-void free_page(uint64_t p);
 void schedule();
 void timer_tick();
 void preempt_disable();

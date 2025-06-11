@@ -1,9 +1,4 @@
-#define NR_SYSCALLS 4
-
-#define SYS_WRITE_NUMBER 0
-#define SYS_MALLOC_NUMBER 1
-#define SYS_CLONE_NUMBER 2
-#define SYS_EXIT_NUMBER 3
+#include "syscalls.h"
 
 .globl call_sys_write
 call_sys_write:

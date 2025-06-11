@@ -43,13 +43,6 @@ void puts(const char* buffer) {
 	}
 }
 
-void uart_update() {
-	if (uart_is_read_byte_ready()) {
-		uint8_t ch = getchar();
-		putchar(ch);
-	}
-}
-
 void puthex(unsigned int d) {
 	unsigned int n;
 	int c;
