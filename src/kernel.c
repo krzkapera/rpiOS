@@ -20,6 +20,8 @@ void kernel_process() {
 	if (err < 0) {
 		printf("Error while moving process to user mode\n\r");
 	}
+
+	while (1);
 }
 
 void main() {

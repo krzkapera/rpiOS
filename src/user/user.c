@@ -63,7 +63,7 @@ void user_process() {
 		printf("Error while allocating stack for process 2\n");
 		return;
 	}
-	err = call_sys_clone((uint64_t)&user_process1, (uint64_t)"abcde", stack);
+	err = call_sys_clone((uint64_t)&user_process2, (uint64_t)"abcde", stack);
 	if (err < 0) {
 		printf("Error while clonning process 2\n");
 		return;

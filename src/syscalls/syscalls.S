@@ -21,12 +21,12 @@ call_sys_exit:
 .globl call_sys_clone
 call_sys_clone:
 	/* Save args for the child.  */
-	mov	x10, x0					/*fn*/
-	mov	x11, x1					/*arg*/
-	mov	x12, x2					/*stack*/
+	mov	x10, x0					/* fn */
+	mov	x11, x1					/* arg */
+	mov	x12, x2					/* stack */
 
 	/* Do the system call.  */
-	mov 	x0, x2					/* stack  */
+	mov 	x0, x2				/* stack */
 	mov	x8, #SYS_CLONE_NUMBER
 	svc	0x0
 
