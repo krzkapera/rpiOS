@@ -11,7 +11,7 @@ def calc_checksum(data):
 
 
 CHUNK_SIZE = 128
-WAIT_TIME = 0.01
+WAIT_TIME = 0.1
 
 
 def process_file(file_path, pipe_path):
